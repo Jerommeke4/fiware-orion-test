@@ -1,0 +1,87 @@
+### Get all the entities
+GET http://localhost:1026/v2/entities
+
+### Post a new entity to the message queue
+POST http://localhost:1026/v2/entities
+Content-Type: application/json
+
+{
+  "id": "Room1",
+  "type": "Room",
+  "temperature": {
+    "value": 23,
+    "type": "Float"
+  },
+  "pressure": {
+    "value": 720,
+    "type": "Integer"
+  }
+}
+
+### Get an entity by their ID
+GET http://localhost:1026/v2/entities/Room1
+
+
+### Get an unstructured result only showing keys and values
+GET http://localhost:1026/v2/entities/Room1?options=keyValues
+
+
+### Get specific attributes as values only
+GET http://localhost:1026/v2/entities/Room1?options=values&attrs=temperature,pressure
+
+#### Get more specific
+GET http://localhost:1026/v2/entities/Room1/attrs/temperature
+
+### Get the value of a attribute of an entity
+GET http://localhost:1026/v2/entities/Room1/attrs/temperature/value
+
+
+### Update elements of an entity
+PATCH http://localhost:1026/v2/entities/Room1/attrs
+Content-Type: application/json
+
+{
+  "temperature": {
+    "value": 20
+  }
+}
+
+#### SUBSCRIPTIONS
+### Get the subscribers
+GET  http://localhost:1026/v2/subscriptions
+####
+
+# Create a subscription for an entity with a specific end point
+POST http://localhost:1026/v2/subscriptions
+Content-Type: application/json
+
+{
+  "description": "A subscription to get info about Room1",
+  "subject": {
+    "entities": [
+      {
+        "id": "Room1",
+        "type": "Room"
+      }
+    ],
+    "condition": {
+      "attrs": [
+        "temperature"
+      ]
+    }
+  },
+  "notification": {
+    "http": {
+      "url": "http://express:9999/"
+    },
+    "attrs": [
+      "temperature"
+    ]
+  },
+  "expires": "2040-01-01T14:00:00.00Z",
+  "throttling": 5
+}
+
+##### EXPRESS
+
+POST http://localhost:9999
